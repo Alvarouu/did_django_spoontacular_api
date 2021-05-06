@@ -34,15 +34,15 @@ def results(request):
 	if cat and query:
 		results = APIMixin(cat=cat, query=query).get_data()
 
-		print(results)
-		context = {
-			"results": results,
-			"cat": cat,
-			"query": query,
-		}
+		if results:
+			context = {
+				"results": results,
+				"cat": cat,
+				"query": query,
+			}
 
-		return render(request, 'main/results.html', context)
-	else:
-		return redirect(reverse('main:home'))
+			return render(request, 'main/results.html', context)
+	
+	return redirect(reverse('main:home'))
 
 
