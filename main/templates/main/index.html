@@ -9,8 +9,9 @@
 {% block extend_nav %} 
 
 <ul class="sidenav">
-  <li><a class="active" href="javascript:void(0)">Home</a></li>
-  <li><a href="{% url 'main:results' %}">Results</a></li>
+  <li><a class="active" href="{% url 'main:home' %}">Home</a></li>
+  <li><a href="{% url 'main:results' %}">Resultados</a></li>
+  <li><a href="{% url 'main:shopping_list' %}">Lista de la compra</a></li>
 </ul>
 
 {% endblock %}
@@ -18,28 +19,28 @@
 
 {% block content %}
 
-<h3 id="map">Django Spoontacular API Demo - Home</h3>
+<h3 id="map">Escaner alergenos</h3>
 
 <div class="container">
 
 	<form id="apiform" method="POST" action="/">
     {% csrf_token %}
 
-    	<label for="username">Select category</label>
+    	<label for="username">Selecciona una categoria</label>
     	<select name="cat" id="cat">
-    		<option selected value="">Select one</option>
-		  	<option value="recipes">Recipes</option>
-		  	<option value="ingredients">Ingredients</option>
-		  	<option value="menuItems">Menu Items</option>
-		  	<option value="products">Products</option>
+    		<option selected value="">Selecciona una categoria</option>
+		  	<option value="recipes">Recetas</option>
+		  	<option value="ingredients">Ingredientes</option>
+		  	<option value="menuItems">Ingredientes Menu</option>
+		  	<option value="products">Productos</option>
 		</select>
 	   
-	   <label for="username">Search</label>
+	   <label for="username">Buscar</label>
 	   <input type="search" id="query" name="query">
 
 	   
 
-	   <button type="submit">Submit</button>
+	   <button type="submit">Confirmar</button>
 	</form>
 
 

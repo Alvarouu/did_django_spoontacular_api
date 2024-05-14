@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'main.css' %}"></link>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 
   <!-- This allows us to extend the head scripts in HTML docs that have special requirements-->
   {% block extend_head %}
@@ -24,7 +26,7 @@
   {% endblock %}
 
   <div class="div-container">
-    
+
     {% include 'main/partials/logo.html' %}
 
     {% block content %}
@@ -35,7 +37,7 @@
 
 
   <!-- This allows us to extend the foot scripts in HTML docs that have special requirements-->
-  {% block extend_footer %}
+    {% block extend_footer %}
 
   {% endblock %}
   
