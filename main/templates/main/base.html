@@ -19,7 +19,20 @@
 
 </head>
 <body>
+    <ul class="sidenav">
+        <li><a class="active" href="{% url 'main:home' %}">Home</a></li>
+        <li><a href="{% url 'main:results' %}">Resultados</a></li>
+        <li><a href="{% url 'main:shopping_list' %}">Lista de la compra</a></li>
+        <li><a href="">Filtro por alergenos</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'main:perfil' pk=user.pk %}">Perfil</a></li>
+            <li><a href="{% url 'main:logout' %}">Cerrar sesión</a></li>
+        {% else %}
+            <li><a href="{% url 'main:login' %}">Login</a></li>
+            <li><a href="{% url 'main:registro' %}">Registro</a></li>
+        {% endif %}
 
+    </ul>
   <!-- This allows us to extend the nav bar in HTML docs that have special requirements-->
   {% block extend_nav %}
 

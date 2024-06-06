@@ -1,0 +1,48 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block extend_head %}
+
+{% endblock %}
+
+{% block extend_nav %}
+
+
+
+{% endblock %}
+
+
+{% block content %}
+
+<h3>Escaner alergenos</h3>
+
+<div class="container">
+    <h3>Detalles de la Receta</h3>
+    {% if recipe_info %}
+        <h4>{{ recipe_info.title }}</h4>
+        <img src="{{ recipe_info.image }}" alt="{{ recipe_info.title }}">
+        <p>Servings: {{ recipe_info.servings }}</p>
+        <p>Ready in minutes: {{ recipe_info.readyInMinutes }}</p>
+        <p>{{ recipe_info.summary }}</p>
+        <h3>Ingredientes:</h3>
+        <ul>
+            {% for ingredient in recipe_info.extendedIngredients %}
+                <li>{{ ingredient.name }} - {{ ingredient.amount }} {{ ingredient.unit }}</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'main:home' %}">Volver</a>
+    {% else %}
+        <p>No se encontraron detalles para esta receta.</p>
+    {% endif %}
+</div>
+
+
+{% endblock %}
+
+{% block extend_footer %}
+
+
+
+
+{% endblock %}

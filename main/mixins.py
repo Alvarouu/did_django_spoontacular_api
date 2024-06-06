@@ -36,6 +36,24 @@ class APIMixin:
 		self.query = kwargs.get("query")
 		self.cat = kwargs.get("cat")
 
+	def get_recipe_information(self, recipe_id):
+		url = f"https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={settings.API_KEY}"
+
+		# Realizar la solicitud a la API
+		response = requests.get(url)
+
+		if 200 <= response.status_code <= 299:
+			print(response.status_code)
+			# Procesar la respuesta JSON
+			data = response.json()
+			print(data)
+			return data
+		else:
+			# Manejar cualquier error de la solicitud
+			print(f"Error al obtener la información de la receta: {response.status_code}")
+			return None
+
+
 	def get_data(self):
 
 		url_dict = {
@@ -44,7 +62,7 @@ class APIMixin:
 			"menuItems": "food/menuItems/search?",
 			"products": "food/products/search?"
 		}
-        
+
 		url = f"https://api.spoonacular.com/{url_dict[self.cat]}query={self.query}&apiKey={settings.API_KEY}"
 
 		r = requests.get(url)

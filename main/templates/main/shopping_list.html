@@ -2,46 +2,41 @@
 {% load static %}
 
 {% block extend_head %}
-
+<!-- Agrega aquí los enlaces a las hojas de estilo o scripts específicos para esta página si es necesario -->
 {% endblock %}
 
 {% block extend_nav %}
-
-<ul class="sidenav">
-  <li><a class="active" href="{% url 'main:home' %}">Home</a></li>
-  <li><a href="{% url 'main:results' %}">Resultados</a></li>
-  <li><a href="{% url 'main:shopping_list' %}">Lista de la compra</a></li>
-</ul>
-
+<!-- Puedes personalizar la barra de navegación aquí si es necesario -->
 {% endblock %}
+
 {% block content %}
     <h1>Lista de la compra</h1>
     <table>
         <thead>
-            <th>Ingrediente</th>
-            <th>Cantidad</th>
-            <th>Eliminar 1</th>
-            <th>Eliminar todos</th>
+            <tr>
+                <th>Ingrediente</th>
+                <th>Cantidad</th>
+                <th>Eliminar 1</th>
+                <th>Eliminar todos</th>
+            </tr>
         </thead>
         <tbody>
         {% for ingredient in ingredients %}
             <tr>
-            <td>{{ ingredient.name }}</td>
-            <td>({{ ingredient.count }})</td>
-            <td>
-                <a href="{% url 'main:remove_one_from_shopping_list' ingredient.id %}">
-                    <i class="fas fa-minus"></i>
-                </a>
-            </td>
-            <td>
-                <a href="{% url 'main:remove_all_from_shopping_list' ingredient.id %}">
-                    <i class="fas fa-trash-alt"></i>
-                </a>
-            </td>
+                <td>{{ ingredient.name }}</td>
+                <td>({{ ingredient.count }})</td>
+                <td>
+                    <a href="{% url 'main:remove_one_from_shopping_list' ingredient.id %}">
+                        <i class="fas fa-minus"></i>
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'main:remove_all_from_shopping_list' ingredient.id %}">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
-
 {% endblock %}
