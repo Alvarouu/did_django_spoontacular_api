@@ -12,8 +12,8 @@
   <p><strong>Email:</strong> {{ user.email }}</p>
   <p><strong>Alérgenos:</strong>
     <ul>
-      {% for alergeno in alergenos %}
-      <li>{{ listaAle.name }}</li>
+       {% for alergeno in alergenos %}
+      <li>{{ alergeno.name }}</li>
     {% endfor %}
     </ul>
   </p>

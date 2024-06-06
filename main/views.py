@@ -51,43 +51,66 @@ class results(View):
         return redirect(reverse('main:home'))
 
 
-
 def add_to_shopping_list(request, ingredient_id, ingredient_name):
     try:
-        # Intentamos obtener el ingrediente de la base de datos
-        ingredient = Ingredientes.objects.get(id=ingredient_id)
-        # Si el ingrediente existe, aumentamos su cantidad en uno
-        ingredient.count += 1
-        ingredient.save()
-    except Ingredientes.DoesNotExist:
-        # Si el ingrediente no existe, lo creamos con una cantidad de uno
-        ingredient = Ingredientes.objects.create(id=ingredient_id, name=ingredient_name, count=1)
+        # Obtener el perfil del usuario actual
+        perfil, created = Perfil.objects.get_or_create(username=request.user)
+
+        # Intentamos obtener el ingrediente del perfil del usuario
+        ingredient = perfil.listaIng.filter(id=ingredient_id).first()
+
+        if ingredient is not None:
+            # Si el ingrediente ya existe en la lista de ingredientes del perfil, aumentamos su cantidad en uno
+            ingredient.count += 1
+            ingredient.save()
+        else:
+            # Si el ingrediente no existe en la lista de ingredientes del perfil, lo creamos con una cantidad de uno
+            ingredient = Ingredientes.objects.create(id=ingredient_id, name=ingredient_name, count=1)
+            perfil.listaIng.add(ingredient)
+
+    except Exception as e:
+        # Manejar cualquier otro error que pueda ocurrir
+        print(f"Error: {e}")
+
     # Redireccionamos a la página de la lista de la compra
     return redirect('main:shopping_list')
 
 
-
-
 def remove_one_from_shopping_list(request, ingredient_id):
-    # Obtener el perfil del usuario autenticado
-    perfil = Perfil.objects.get(username=request.user)
+    try:
+        # Obtener el perfil del usuario autenticado
+        perfil = Perfil.objects.get(username=request.user)
 
-    # Obtener el ingrediente de la lista de compras
-    ingredient = Ingredientes.objects.get(id=ingredient_id)
+        # Obtener el ingrediente de la lista de compras
+        ingredient = perfil.listaIng.filter(id=ingredient_id).first()
 
-    # Añadir el ingrediente a la lista de ingredientes del perfil
-    perfil.ingredientes.add(ingredient)
+        if ingredient is not None:
+            # Si el ingrediente está en la lista de ingredientes del perfil, lo eliminamos
+            perfil.listaIng.remove(ingredient)
+
+    except Exception as e:
+        # Manejar cualquier otro error que pueda ocurrir
+        print(f"Error: {e}")
 
     # Redirigir a la página de la lista de compras
     return redirect('main:shopping_list')
 
 
 def remove_all_from_shopping_list(request, ingredient_id):
-    # Obtener el ingrediente de la lista de compras
-    ingredient = Ingredientes.objects.get(id=ingredient_id)
+    try:
+        # Obtener el perfil del usuario autenticado
+        perfil = Perfil.objects.get(username=request.user)
 
-    # Eliminar el ingrediente de la lista de compras
-    ingredient.delete()
+        # Obtener el ingrediente de la lista de compras
+        ingredient = perfil.listaIng.filter(id=ingredient_id).first()
+
+        if ingredient is not None:
+            # Si el ingrediente está en la lista de ingredientes del perfil, lo eliminamos
+            perfil.listaIng.remove(ingredient)
+
+    except Exception as e:
+        # Manejar cualquier otro error que pueda ocurrir
+        print(f"Error: {e}")
 
     # Redirigir a la página de la lista de compras
     return redirect('main:shopping_list')

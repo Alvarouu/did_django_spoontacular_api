@@ -7,7 +7,7 @@ class Ingredientes(models.Model):
     count = models.IntegerField(default=1)
 
     def __str__(self):
-        return {self.name}({self.count})
+        return f"{self.name} ({self.count})"
 
 
 class Alergenos(models.Model):
