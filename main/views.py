@@ -81,11 +81,15 @@ def remove_one_from_shopping_list(request, ingredient_id):
         # Obtener el perfil del usuario autenticado
         perfil = Perfil.objects.get(username=request.user)
 
-        # Obtener el ingrediente de la lista de compras
-        ingredient = perfil.listaIng.filter(id=ingredient_id).first()
+        # Obtener el ingrediente específico por su ID
+        ingredient = perfil.listaIng.get(id=ingredient_id)
 
-        if ingredient is not None:
-            # Si el ingrediente está en la lista de ingredientes del perfil, lo eliminamos
+        if ingredient.count > 1:
+            # Si el ingrediente tiene más de 1 en el count, reducirlo en 1
+            ingredient.count -= 1
+            ingredient.save()
+        else:
+            # Si solo hay 1 o menos, eliminar el ingrediente de la lista
             perfil.listaIng.remove(ingredient)
 
     except Exception as e:
@@ -175,8 +179,6 @@ class shopping_list(LoginRequiredMixin, ListView):
 
         context['ingredients'] = perfil.listaIng.all()
 
-        print(context)
-        print('adios')
         return context
 
     def get_queryset(self):
