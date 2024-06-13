@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import LogOut
+from .views import LogOut, BusqAle
 
 # 33389
 app_name = "main"
@@ -21,6 +21,9 @@ urlpatterns = [
     path('login/', views.Login.as_view(), name='login'),
     path('perfil/<int:pk>/', views.PerfilView.as_view(), name='perfil'),
     path('logout/', LogOut.as_view(), name='logout'),
+    path('recipe_detail_pdf/<int:recipe_id>', views.recipe_detail_pdf, name='recipe_pdf'),
+    path('busqAle/', views.BusqAle.as_view(), name="busq_ale"),
+    path('result_ale', views.result_ale.as_view(), name="result_ale")
 
 
 ]

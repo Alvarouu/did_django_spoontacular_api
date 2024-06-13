@@ -1,4 +1,4 @@
-{% extends 'main/base.html' %}
+
 {% load static %}
 
 
@@ -31,14 +31,10 @@
                 <li>{{ ingredient.name }} - {{ ingredient.amount }} {{ ingredient.unit }}</li>
             {% endfor %}
         </ul>
-        <a href="{% url 'main:home' %}">Volver</a><br>
-        <a href="{% url 'main:recipe_pdf' recipe_info.id %}" target="_blank">PDF</a>
     {% else %}
         <p>No se encontraron detalles para esta receta.</p>
     {% endif %}
 </div>
-
-
 
 {% endblock %}
 

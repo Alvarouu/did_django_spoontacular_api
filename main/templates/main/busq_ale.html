@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block extend_head %}
+
+{% endblock %}
+
+{% block extend_nav %}
+{% endblock %}
+
+
+{% block content %}
+
+<h3>Busqueda por Alergenos</h3>
+
+    <div class="container">
+
+        <form method="post">
+            {% csrf_token %}
+            <select id="queryAle" name="queryAle">
+                <option selected value="">Selecciona una categoria</option>
+                {% for i in context.alergenos %}
+                    <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+
+
+           <label for="username">Buscar</label>
+	       <input type="search" id="query" name="query">
+           <button type="submit">Confirmar</button>
+        </form>
+
+    </div>
+
+
+{% endblock %}
+
+{% block extend_footer %}
+
+
+
+
+{% endblock %}

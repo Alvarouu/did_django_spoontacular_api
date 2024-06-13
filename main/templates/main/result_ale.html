@@ -15,7 +15,6 @@
 
     <div class="container">
 
-        <h4><b>Si el nombre se muestra en rojo contiene alergenos de tu perfil, si no en verde.</b></h4>
         <h4>Resultados de la api para:</h4>
         <h3>Cat: <em style="color: #9c07b6"><b>"{{ cat }}"</b></em></h3>
         <h3>Query: <em style="color: #9c07b6"><b>"{{ query }}"</b></em></h3>
@@ -25,9 +24,6 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Imagen</th>
-                    {% if cat == "ingredients" %}
-                        <th>Añadir</th>
-                    {% endif %}
                     {% if cat == "recipes" %}
                         <th>Ver receta</th>
                     {% endif %}
@@ -42,18 +38,7 @@
                     {% else %}
                         <td style="color: {{ item.color }};">{{ item.title }}</td>
                     {% endif %}
-                    {% if cat == "ingredients" %}
-                        <td>No image available</td>
-
-                        <td style="text-align: center; vertical-align: middle;">
-                             <a href="{% url 'main:add_to_shopping_list' item.id item.name %}">
-                                <i class="fas fa-plus"></i>
-                            </a>
-                        </td>
-
-                    {% else %}
-                        <td><img src="{{ item.image }}" style="width:auto; height: 125px"></td>
-                    {% endif %}
+                    <td><img src="{{ item.image }}" style="width:auto; height: 125px"></td>
                     {% if cat == "recipes" %}
                     <td><a href="{% url 'main:recipe_detail' item.id %}">Ver receta</a></td>
                     {% endif %}

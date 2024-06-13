@@ -8,3 +8,13 @@ requests==2.25.1
 sqlparse==0.4.1
 typing-extensions==3.10.0.0
 urllib3==1.26.4
+
+xhtml2pdf~=0.2.16
+pip~=24.0
+wheel~=0.38.4
+cryptography~=42.0.8
+pillow~=10.3.0
+colorama~=0.4.6
+PyYAML~=6.0.1
+six~=1.16.0
+setuptools~=65.5.1

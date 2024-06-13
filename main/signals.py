@@ -6,9 +6,9 @@ from .models import Alergenos
 @receiver(post_migrate)
 def populate_allergens(sender, **kwargs):
     initial_allergens = [
-        'apio', 'gluten', 'crustáceos', 'huevos', 'pescado', 'altramuz',
-        'leche', 'moluscos', 'mostaza', 'maní', 'sésamo', 'soja',
-        'dióxido de azufre y sulfitos', 'frutos secos'
+        'celery', 'gluten', 'crustaceans', 'egg', 'fish', 'lupine',
+        'milk', 'mollusks', 'mustard', 'peanut', 'sesame', 'soy',
+        'sulfur dioxide and sulfites', 'nuts'
     ]
     for allergen in initial_allergens:
         Alergenos.objects.get_or_create(name=allergen)

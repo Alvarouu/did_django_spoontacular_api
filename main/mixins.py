@@ -8,6 +8,7 @@ import json
 '''
 Handles form error that are passed back to AJAX calls
 '''
+
 def FormErrors(*args):
 	message = ""
 	for f in args:
@@ -35,6 +36,7 @@ class APIMixin:
 
 		self.query = kwargs.get("query")
 		self.cat = kwargs.get("cat")
+		self.queryAle = kwargs.get("queryAle")
 
 	def get_recipe_information(self, recipe_id):
 		url = f"https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={settings.API_KEY}"
@@ -64,6 +66,11 @@ class APIMixin:
 		}
 
 		url = f"https://api.spoonacular.com/{url_dict[self.cat]}query={self.query}&apiKey={settings.API_KEY}"
+		url = ""
+		if self.queryAle:
+			url = f"https://api.spoonacular.com/{url_dict[self.cat]}query={self.query}&intolerances={self.queryAle}&apiKey={settings.API_KEY}"
+		else:
+			url = f"https://api.spoonacular.com/{url_dict[self.cat]}query={self.query}&apiKey={settings.API_KEY}"
 
 		r = requests.get(url)
 		if r.status_code == 200:

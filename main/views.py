@@ -1,25 +1,21 @@
 from django.shortcuts import render, reverse, redirect
 from django.db import transaction
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View, generic
+from django.views import View
 from django.views.generic import ListView, CreateView
 from .forms import RegistroForm
-from .mixins import (
-    FormErrors,
-    RedirectParams,
-    APIMixin
-)
-from .models import Ingredientes, Perfil
+from .mixins import (APIMixin)
+from .models import Ingredientes, Perfil, Alergenos
+from .utils import render_to_pdf
+
 
 '''
 Basic view for selecting query
 '''
-
-
 
 
 def index(request):
@@ -34,14 +30,26 @@ def index(request):
     return render(request, 'main/index.html', {})
 
 
-
 class results(View):
     def get(self, request):
         cat = request.GET.get("cat", None)
         query = request.GET.get("query", None)
+
         if cat and query:
             results = APIMixin(cat=cat, query=query).get_data()
             if results:
+                user = request.user
+                perfil = Perfil.objects.get(username=user)
+                alergenos = perfil.listaAle.all()
+                alergenos_nombres = [alergeno.name for alergeno in alergenos]
+
+                for result in results:
+                    result_name = result.get('name', result.get('title', ''))
+                    if any(alergeno in result_name for alergeno in alergenos_nombres):
+                        result['color'] = 'red'
+                    else:
+                        result['color'] = 'green'
+
                 context = {
                     "results": results,
                     "cat": cat,
@@ -56,7 +64,7 @@ def add_to_shopping_list(request, ingredient_id, ingredient_name):
         # Obtener el perfil del usuario actual
         perfil, created = Perfil.objects.get_or_create(username=request.user)
 
-        # Intentamos obtener el ingrediente del perfil del usuario
+        # Obtenemos el ingrediente del perfil del usuario
         ingredient = perfil.listaIng.filter(id=ingredient_id).first()
 
         if ingredient is not None:
@@ -78,10 +86,10 @@ def add_to_shopping_list(request, ingredient_id, ingredient_name):
 
 def remove_one_from_shopping_list(request, ingredient_id):
     try:
-        # Obtener el perfil del usuario autenticado
+        # Obtenemos el perfil del usuario autenticado
         perfil = Perfil.objects.get(username=request.user)
 
-        # Obtener el ingrediente específico por su ID
+        # Obtenemos el ingrediente específico por su ID
         ingredient = perfil.listaIng.get(id=ingredient_id)
 
         if ingredient.count > 1:
@@ -102,10 +110,10 @@ def remove_one_from_shopping_list(request, ingredient_id):
 
 def remove_all_from_shopping_list(request, ingredient_id):
     try:
-        # Obtener el perfil del usuario autenticado
+        # Obtenemos el perfil del usuario autenticado
         perfil = Perfil.objects.get(username=request.user)
 
-        # Obtener el ingrediente de la lista de compras
+        # Obtenemos el ingrediente de la lista de compras
         ingredient = perfil.listaIng.filter(id=ingredient_id).first()
 
         if ingredient is not None:
@@ -123,7 +131,7 @@ def remove_all_from_shopping_list(request, ingredient_id):
 def recipe_detail(request, recipe_id):
     api_client = APIMixin()  # Instancia del cliente API
 
-    # Obtener la información detallada de la receta
+    # Obtenemos la información detallada de la receta
     recipe_info = api_client.get_recipe_information(recipe_id)
     context = {
         "recipe_info": recipe_info
@@ -131,12 +139,26 @@ def recipe_detail(request, recipe_id):
     return render(request, 'main/recipe_detail.html', context)
 
 
+def recipe_detail_pdf(request, recipe_id):
+    api_client = APIMixin()  # Instancia del cliente API
+
+    # Obtenemos la información detallada de la receta
+    recipe_info = api_client.get_recipe_information(recipe_id)
+    context = {
+        "recipe_info": recipe_info
+    }
+
+    pdf = render_to_pdf('main/pdf.html', context)
+
+    return HttpResponse(pdf, content_type='application/pdf')
+
+
 class RegistroView(CreateView):
     form_class = RegistroForm
     template_name = 'main/registro.html'
     success_url = reverse_lazy('main:home')
 
-    @transaction.atomic
+    @transaction.atomic # Si hay un error durante el registro no se genera ningun perfil
     def get_template_names(self, request=None):
         return [self.template_name]
 
@@ -172,10 +194,10 @@ class shopping_list(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Obtener el perfil del usuario actual
+        # Obtenemos el perfil del usuario actual
         perfil = Perfil.objects.get(username=self.request.user)
 
-        # Obtener todos los ingredientes del perfil
+        # Obtenemos todos los ingredientes del perfil
 
         context['ingredients'] = perfil.listaIng.all()
 
@@ -208,6 +230,51 @@ class PerfilView(LoginRequiredMixin, ListView):
 
 
 class LogOut(View):
+
     def get(self, request):
         logout(request)
         return HttpResponseRedirect(reverse('main:home'))
+
+
+class BusqAle(View):
+
+    def get(self, request):
+
+        model = Alergenos
+        context = {'alergenos': Alergenos.objects.all().values_list('name', flat=True)}
+        return render(request, 'main/busq_ale.html', {'context': context})
+
+    def post(self, request):
+            queryAle = request.POST.get("queryAle", None)
+            query = request.POST.get("query", None)
+            if query and queryAle:
+                # Genera la URL con los parámetros cat y query
+                url = reverse('main:result_ale') + f'?queryAle={queryAle}&query={query}'
+                return redirect(url)
+
+            return render(request, 'main/busq_ale.html', {})
+
+
+class result_ale(View):
+    def get(self, request):
+        cat = 'recipes'
+        queryAle = request.GET.get("queryAle", None)
+        query = request.GET.get("query", None)
+
+        if query and queryAle:
+            results = APIMixin(cat=cat, query=query, queryAle=queryAle).get_data()
+
+            if results:
+                user = request.user
+
+                for result in results:
+                    result_name = result.get('name', result.get('title', ''))
+
+                context = {
+                    "results": results,
+                    "cat": cat,
+                    "query": query,
+                }
+                return render(request, 'main/result_ale.html', context)
+        return redirect(reverse('main:home'))
+
